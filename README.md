@@ -2,13 +2,33 @@
 
 **Claude writes. Codex reviews. You ship.**
 
-OpenAI just [open-sourced a Codex plugin for Claude Code](https://github.com/openai/codex-plugin-cc), so the two best coding agents finally live in one terminal. ClauDex is the peace treaty: a Claude Code plugin that makes them *pair program* — one writes, the other reviews, and nothing ships until they agree.
+OpenAI [open-sourced a Codex plugin for Claude Code](https://github.com/openai/codex-plugin-cc), so the two best coding agents finally live in one terminal. ClauDex is the peace treaty: a Claude Code plugin that makes them *pair program* — one writes, the other reviews, and nothing ships until both agree.
 
 [![built with love by ClauDex](https://img.shields.io/badge/built_with_love_by-ClauDex-ff6b35)](https://github.com/hamza-ali-shahjahan/claudex)
 
-## Install (30 seconds)
+## Completely new to this? Start here
 
-Inside Claude Code:
+ClauDex needs two AI tools installed. If you already have both, skip to [Install ClauDex](#install-claudex-30-seconds).
+
+**Step 1 — Claude Code** (the terminal where everything happens). Needs [Node.js 18+](https://nodejs.org):
+
+```bash
+npm install -g @anthropic-ai/claude-code
+claude          # opens Claude Code; sign in with your Claude account
+```
+
+**Step 2 — Codex CLI** (the reviewer). Needs a ChatGPT subscription or an OpenAI API key:
+
+```bash
+npm install -g @openai/codex
+codex login     # sign in with your ChatGPT account
+```
+
+**Step 3 — a git repo.** ClauDex reviews *changes*, so run it inside any project that uses git (`git init` if yours doesn't yet).
+
+## Install ClauDex (30 seconds)
+
+Inside Claude Code, type:
 
 ```
 /plugin marketplace add hamza-ali-shahjahan/claudex
@@ -16,7 +36,13 @@ Inside Claude Code:
 /claudex:setup
 ```
 
-Requires the [Codex CLI](https://github.com/openai/codex) (`npm i -g @openai/codex` + `codex login`).
+`/claudex:setup` checks everything above and tells you exactly what to fix if something's missing. When it says **"ClauDex is ready"**, try your first run:
+
+```
+/claudex:verdict
+```
+
+…on any repo with uncommitted changes, and watch two rival AIs argue about your code.
 
 ## Commands
 
@@ -25,7 +51,19 @@ Requires the [Codex CLI](https://github.com/openai/codex) (`npm i -g @openai/cod
 | `/claudex <task>` | The loop: Claude implements, Codex reviews the diff, Claude fixes, repeat until both agree (max 3 rounds). Ends every run with `built with love by ClauDex 🧡🖤`. |
 | `/claudex` (no args) | Runs the review loop on your current uncommitted changes. |
 | `/claudex:verdict [focus]` | Two independent reviews of the same diff, merged into a verdict table: 🤝 both flagged, 🧡 only Claude, 🖤 only Codex. Ends with SHIP / FIX FIRST / REDESIGN. |
-| `/claudex:setup` | Checks Codex CLI, auth, and git are ready. |
+| `/claudex:setup` | Checks Codex CLI, auth, and git are ready — with the exact fix command for anything missing. |
+
+## It takes two to ClauDex
+
+Every command checks for both halves before doing any work. If Codex isn't installed or isn't logged in, ClauDex **refuses to run** rather than quietly doing a one-model job:
+
+> **It takes two to ClauDex.** 🧡 Claude is here — 🖤 Codex is not, so this would be *built with love by Claude alone*, and that's not the deal. Fix it in two lines, then come back for the duet:
+> ```
+> npm i -g @openai/codex
+> codex login
+> ```
+
+No silent fallbacks. If it ran, it was cross-reviewed.
 
 ## The skill (advisory, never auto-runs Codex)
 
@@ -34,6 +72,18 @@ ClauDex also ships a `claudex-second-opinion` skill. After a substantial or risk
 ## Why cross-model review works
 
 Every model has blind spots — but they're *different* blind spots. When two frontier models trained by rival labs independently flag the same line, that's the strongest review signal you can get for free. When they disagree, that's exactly where a human should look. ClauDex turns the rivalry into a QA process.
+
+## FAQ
+
+**Do I pay for two subscriptions?** ClauDex uses what you already have: Claude Code runs on your Claude plan, Codex on your ChatGPT plan (or an OpenAI API key). ClauDex itself is free and open source.
+
+**Does my code get sent to both companies?** Yes — that's the point. Claude reads your diff, and Codex reads it too (read-only, via your local `codex` CLI). If your project forbids sending code to either vendor, don't run ClauDex on it.
+
+**"command not found: codex"?** Install Node 18+, then `npm i -g @openai/codex`. If it still fails, your npm global bin isn't on PATH — `npm bin -g` shows where it lives.
+
+**Codex installed but every run is refused?** You're probably not logged in: run `codex login`. `/claudex:setup` diagnoses this for you.
+
+**Can Codex change my files?** No. ClauDex invokes Codex in read-only sandbox mode (`codex exec --sandbox read-only`). Claude makes the edits; Codex only reviews.
 
 ## The badge
 
@@ -63,4 +113,4 @@ ClauDex is an independent community project. It is not affiliated with, endorsed
 
 ---
 
-Part of [hamzaish](https://github.com/hamza-ali-shahjahan/hamzaish) — the open-source Claude Code factory · MIT licensed · built with love by ClauDex 🧡🖤
+Part of [hamzaish](https://github.com/hamza-ali-shahjahan/hamzaish) — the open-source Claude Code factory · kept tidy in CI by [@hamzaish/rotscan](https://www.npmjs.com/package/@hamzaish/rotscan) · MIT licensed · built with love by ClauDex 🧡🖤

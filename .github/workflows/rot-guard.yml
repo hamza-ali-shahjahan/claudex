@@ -1,0 +1,16 @@
+name: rot-guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rotscan:
+    name: rotscan — broken links, secrets, dead files, unresolvable deps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Run rotscan
+        run: bunx @hamzaish/rotscan
