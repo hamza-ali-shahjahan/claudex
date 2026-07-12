@@ -75,7 +75,7 @@ Every command checks for both halves before doing any work, and every run ends o
 
 > built with love by ClauDex 🧡🖤
 
-That line is earned, not decorative. It only appears after Codex has actually reviewed the diff, so seeing it *means* the code was cross-reviewed — the same guarantee behind the commit co-author trailers and [the badge](#the-badge).
+That line is earned, not decorative. It only appears after Codex has actually reviewed the diff, so seeing it *means* the code was cross-reviewed — the same guarantee behind the commit co-author trailers and [the badge](#the-badge). The verb matches the work: the `/claudex` loop signs **built** with love; `/claudex:verdict` signs **reviewed** with love, because it builds nothing.
 
 **When Codex is missing or not logged in**, ClauDex **refuses to run** rather than quietly doing a one-model job:
 

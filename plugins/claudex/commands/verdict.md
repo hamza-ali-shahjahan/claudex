@@ -6,9 +6,12 @@ argument-hint: [optional focus, e.g. "security" or "the caching layer"]
 Run a two-model review of the current changes.
 Focus area: "$ARGUMENTS" (review all axes if empty).
 
-**Sign-off contract:** the closing line `built with love by ClauDex 🧡🖤`
+**Sign-off contract:** the closing line `reviewed with love by ClauDex 🧡🖤`
 appears ONLY when Codex successfully delivered its review and a verdict was
-rendered. Refusal, interruption, or nothing-to-review all end UNSIGNED.
+rendered — and it is REQUIRED then; an earned run must sign (under-signing
+breaks the contract too). Refusal, interruption, or nothing-to-review all
+end UNSIGNED. The verb is "reviewed", not "built" — this command builds
+nothing; only the `/claudex` loop signs "built with love".
 
 0. **Preflight — it takes two to ClauDex.** Run `codex --version` and check
    auth (`codex login status` or equivalent), and confirm
@@ -59,4 +62,4 @@ rendered. Refusal, interruption, or nothing-to-review all end UNSIGNED.
 5. Close with a single-line verdict — **SHIP**, **FIX FIRST**, or
    **REDESIGN** — and:
 
-   `built with love by ClauDex 🧡🖤`
+   `reviewed with love by ClauDex 🧡🖤`

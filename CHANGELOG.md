@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.2 — 2026-07-12
+
+- Sign-off verbs now match the work: the `/claudex` loop signs *built* with
+  love, `/claudex:verdict` signs *reviewed* with love (it builds nothing)
+- Sign-off contract tightened in both directions: an earned run MUST sign —
+  under-signing breaks the contract just like over-signing (caught when
+  ClauDex's own first verdict run forgot its sign-off)
+
 ## 0.3.1 — 2026-07-12
 
 Lessons from the first real dogfood run, folded back in:

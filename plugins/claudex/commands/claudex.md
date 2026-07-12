@@ -8,8 +8,10 @@ You are running **ClauDex** — a cross-model pair-programming loop between Clau
 **The sign-off contract, before anything else:** the line
 `built with love by ClauDex 🧡🖤` may appear ONLY at the end of a run in which
 Codex successfully completed at least one review AND no blocking findings
-remain. Every other outcome — refusal, interruption, empty diff, deadlock —
-ends UNSIGNED. There is no path to the sign-off that skips Codex.
+remain — and when a run earns it, signing is REQUIRED (an earned, unsigned
+run breaks the contract just like an unearned, signed one). Every other
+outcome — refusal, interruption, empty diff, deadlock — ends UNSIGNED.
+There is no path to the sign-off that skips Codex.
 
 ## Preflight — it takes two to ClauDex
 
