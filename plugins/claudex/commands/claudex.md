@@ -5,12 +5,25 @@ argument-hint: [task to build — or leave empty to run the loop on current unco
 
 You are running **ClauDex** — a cross-model pair-programming loop between Claude Code (you, the writer) and OpenAI Codex (the reviewer).
 
-## Preflight
+## Preflight — it takes two to ClauDex
 
-1. Verify the Codex CLI is available: run `codex --version`.
-   If it is missing, stop and tell the user to install and authenticate it first
-   (`npm i -g @openai/codex` then `codex login`, or install the official plugin with
-   `/plugin marketplace add openai/codex-plugin-cc`), then re-run `/claudex`.
+Both halves must be present before ANY work starts. Claude Code is you — that
+half is here by definition. Now verify the other half:
+
+1. Run `codex --version`. If the binary is missing, STOP immediately — do not
+   implement anything, do not review anything — and reply with exactly:
+
+   > **It takes two to ClauDex.** 🧡 Claude is here — 🖤 Codex is not, so this
+   > would be *built with love by Claude alone*, and that's not the deal.
+   > Fix it in two lines, then come back for the duet:
+   > ```
+   > npm i -g @openai/codex
+   > codex login
+   > ```
+
+2. If the binary exists, verify authentication (`codex login status` or the
+   equivalent for the installed version). If not logged in, STOP the same way,
+   with the same message minus the install line — just `codex login`.
 
 ## The loop
 
