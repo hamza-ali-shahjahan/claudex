@@ -15,3 +15,7 @@ Check each prerequisite and report it as ✅ or ❌ with the exact fix command:
 
 When everything passes, reply:
 "ClauDex is ready. Claude writes, Codex reviews, you ship. 🧡🖤"
+
+If the Codex CLI or its login is missing, end with:
+"**It takes two to ClauDex.** 🧡 Claude is here — 🖤 Codex is not. Run the fix
+commands above, then `/claudex:setup` again for the duet."
