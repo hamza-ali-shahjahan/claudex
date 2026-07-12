@@ -1,5 +1,6 @@
 {
   "name": "claudex",
+  "description": "Cross-model pair programming: Claude writes, Codex reviews, you ship.",
   "owner": {
     "name": "Hamza Ali",
     "email": "mail.hamza.ali@gmail.com"
