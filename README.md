@@ -94,9 +94,11 @@ That line is earned, not decorative. It only appears after Codex has actually re
 
 And the contract is enforced end-to-end: if the Codex call fails mid-run, if there's nothing to review, or if the models are still deadlocked after three rounds, the run ends **unsigned** and says so. No silent fallbacks. If it signed, it was cross-reviewed — that is the only way the line appears.
 
-## The skill (advisory, never auto-runs Codex)
+## Invocation-only, by principle
 
-ClauDex also ships a `claudex-second-opinion` skill. After a substantial or risky change — auth, payments, concurrency, a big refactor, a bug fix with an uncertain root cause — Claude will *suggest* running `/claudex:verdict` in one line. It never invokes Codex on its own: cross-model review spends your Codex quota, so explicit invocation is consent. Commands do the work; the skill just remembers to ask.
+ClauDex never runs by default. No hooks, no background reviews, no silent gates in your workflow — a duet costs real minutes and real Codex quota, so the *only* trigger is a human typing a command (or asking their agent to run one). If you didn't invoke it, it didn't run.
+
+The one soft touch is the bundled `claudex-second-opinion` skill: after a substantial or risky change — auth, payments, concurrency, a big refactor, a bug fix with an uncertain root cause — Claude may *suggest* running `/claudex:verdict`, in a single line, at most once. It cannot invoke Codex on its own. Commands do the work; the skill just remembers to ask. (Don't even want the suggestion? `claude plugin disable claudex@claudex` when you're not using it, or delete the skill directory from your installed copy.)
 
 ## Why cross-model review works
 
