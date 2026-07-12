@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0 — 2026-07-12
+
+- **`/claudex:demo`** — the first-run experience: plants five bugs (crash,
+  validation gap, loose equality, input mutation, float money math) in a
+  throwaway temp repo, has both models review independently, then reveals
+  the planted-vs-caught scoreboard per model. Cleans up after itself; the
+  user's files are never touched. Normal sign-off rules apply — an
+  interrupted demo ends unsigned too
+- Setup's "ready" message and the README now route first-timers to the demo
+
 ## 0.3.2 — 2026-07-12
 
 - Sign-off verbs now match the work: the `/claudex` loop signs *built* with

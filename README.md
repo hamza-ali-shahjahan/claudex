@@ -50,13 +50,19 @@ claude plugin install claudex@claudex
 
 Either way the install is per-user and one-time: `/claudex` is then available in every Claude Code session on your machine (already-open sessions need a restart — plugins load at session start).
 
-`/claudex:setup` checks everything above and tells you exactly what to fix if something's missing. When it says **"ClauDex is ready"**, try your first run:
+`/claudex:setup` checks everything above and tells you exactly what to fix if something's missing.
+
+## Your first duet (2 minutes)
+
+When setup says **"ClauDex is ready"**, run:
 
 ```
-/claudex:verdict
+/claudex:demo
 ```
 
-…on any repo with uncommitted changes, and watch two rival AIs argue about your code.
+It plants five bugs in a throwaway repo — an obvious crash, a subtle money-math issue, a pure judgment call — then has Claude and Codex review the file *independently* and shows you the scoreboard: which bugs 🤝 both caught, which only 🧡 Claude saw, which only 🖤 Codex saw. Your own files are never touched, and the throwaway repo is deleted afterwards.
+
+When you're ready for real code, run `/claudex:verdict` in any repo with uncommitted changes.
 
 ## Commands
 
@@ -66,6 +72,7 @@ Either way the install is per-user and one-time: `/claudex` is then available in
 | `/claudex` (no args) | Runs the review loop on your current uncommitted changes. |
 | `/claudex:verdict [focus]` | Two independent reviews of the same diff, merged into a verdict table: 🤝 both flagged, 🧡 only Claude, 🖤 only Codex. Ends with SHIP / FIX FIRST / REDESIGN. |
 | `/claudex:setup` | Checks Codex CLI, auth, and git are ready — with the exact fix command for anything missing. |
+| `/claudex:demo` | The two-minute first duet: plants five bugs in a throwaway repo, both models review independently, you get the planted-vs-caught scoreboard. |
 
 ## It takes two to ClauDex
 

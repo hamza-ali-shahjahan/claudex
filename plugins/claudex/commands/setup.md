@@ -16,7 +16,9 @@ Check each prerequisite and report it as ✅ or ❌ with the exact fix command:
    (`/plugin marketplace add openai/codex-plugin-cc`, then `/plugin install codex@openai-codex`)
 
 When everything passes, reply:
-"ClauDex is ready. Claude writes, Codex reviews, you ship. 🧡🖤"
+"ClauDex is ready. Claude writes, Codex reviews, you ship. 🧡🖤
+First time? Run `/claudex:demo` — two minutes, zero risk: watch the two
+models argue over planted bugs before you point them at real code."
 
 If the Codex CLI or its login is missing, end with:
 "**It takes two to ClauDex.** 🧡 Claude is here — 🖤 Codex is not. Run the fix
