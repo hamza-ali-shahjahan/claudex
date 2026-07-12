@@ -8,8 +8,10 @@ Check each prerequisite and report it as ✅ or ❌ with the exact fix command:
    (fix: `npm i -g @openai/codex`)
 2. **Codex authenticated** — `codex login status` or the equivalent for the
    installed version (fix: `codex login`)
-3. **Inside a git repo** — `git rev-parse --is-inside-work-tree`
-   (ClauDex reviews diffs, so it needs git)
+3. **Inside a git repo** — `git rev-parse --is-inside-work-tree`. Distinguish
+   the two failure modes: git not installed (fix: `xcode-select --install` on
+   macOS, `apt install git`/`winget install Git.Git` elsewhere) vs. not a
+   repository (fix: `git init` — ClauDex reviews diffs, so it needs one)
 4. **Optional:** the official Codex plugin for `/codex:*` commands
    (`/plugin marketplace add openai/codex-plugin-cc`, then `/plugin install codex@openai-codex`)
 

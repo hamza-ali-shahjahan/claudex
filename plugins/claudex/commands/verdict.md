@@ -3,31 +3,55 @@ description: Two-model verdict — Claude and Codex independently review the sam
 argument-hint: [optional focus, e.g. "security" or "the caching layer"]
 ---
 
-Run a two-model review of the current changes. Use the uncommitted diff; if the
-working tree is clean, use the branch diff against the default branch.
+Run a two-model review of the current changes.
 Focus area: "$ARGUMENTS" (review all axes if empty).
 
+**Sign-off contract:** the closing line `built with love by ClauDex 🧡🖤`
+appears ONLY when Codex successfully delivered its review and a verdict was
+rendered. Refusal, interruption, or nothing-to-review all end UNSIGNED.
+
 0. **Preflight — it takes two to ClauDex.** Run `codex --version` and check
-   auth (`codex login status` or equivalent). If either fails, STOP before
-   reviewing anything and reply with exactly:
+   auth (`codex login status` or equivalent), and confirm
+   `git rev-parse --is-inside-work-tree` prints `true`. If Codex is missing
+   or logged out, STOP before reviewing anything and reply with exactly:
 
    > **It takes two to ClauDex.** 🧡 Claude is here — 🖤 Codex is not, so this
    > verdict would be *built with love by Claude alone*, and a one-model
    > verdict is just an opinion. Fix: `npm i -g @openai/codex` then
    > `codex login`, and come back for the duet.
 
-1. Collect the diff yourself with git.
-2. **Claude's review (yours).** Review it for correctness, design, security, and
-   performance. Write your findings down BEFORE consulting Codex, so your take is
-   genuinely independent.
-3. **Codex's review.** Run:
-   `codex exec --sandbox read-only "<same review instructions + the diff>"`
+   If not in a git worktree, STOP unsigned and say ClauDex needs a git repo.
+
+1. **Pick what to review**, in this order:
+   - Uncommitted changes: `git diff` + `git diff --staged` + untracked files
+     (via `git status --porcelain`, appending each new file's content).
+   - If clean: the branch diff against the default branch. Discover it with
+     `git symbolic-ref refs/remotes/origin/HEAD` (strip the prefix); fall
+     back to `main`, then `master`.
+   - If already on the default branch with a clean tree: review the latest
+     commit (`git show HEAD`).
+   - If the repo has no commits at all, STOP unsigned: nothing to review.
+2. **Claude's review (yours).** Review it for correctness, design, security,
+   and performance. Write your findings BEFORE consulting Codex, so your take
+   is genuinely independent.
+3. **Codex's review — safe transport.** Write the change set to a temp file
+   (e.g. `$TMPDIR/claudex-verdict.patch`); never inline diff content in the
+   shell command. Then:
+
+   ```
+   codex exec --sandbox read-only "You are reviewing a teammate's change before merge. Read the diff at <absolute temp file path> and review it for correctness, design, security, and performance. Be specific — cite files and lines."
+   ```
+
+   Delete the temp file afterwards. If `codex exec` fails or returns no
+   recognizable review, STOP unsigned: "The duet was interrupted — no verdict
+   without both voices." Include the error.
 4. **The Verdict.** Merge both reviews into three sections:
    - 🤝 **Both flagged** — cross-model agreement is the strongest signal; fix these first
    - 🧡 **Only Claude flagged**
    - 🖤 **Only Codex flagged**
 
    For each finding: `file:line`, one-line issue, severity (blocker / should-fix / nit).
-5. Close with a single-line verdict — **SHIP**, **FIX FIRST**, or **REDESIGN** — and:
+5. Close with a single-line verdict — **SHIP**, **FIX FIRST**, or
+   **REDESIGN** — and:
 
    `built with love by ClauDex 🧡🖤`

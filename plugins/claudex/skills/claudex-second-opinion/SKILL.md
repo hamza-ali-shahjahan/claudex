@@ -26,8 +26,11 @@ invocation is consent — your job here is one well-timed suggestion, nothing mo
 ## When to stay quiet
 
 - Trivial or mechanical changes: docs, formatting, renames, config bumps
-- The user already ran a ClauDex command on this diff in this session
-- The Codex CLI isn't installed — at most, mention `/claudex:setup` once per session
+- As far as you can tell from the visible conversation, a ClauDex command
+  already ran on this diff (best-effort — don't re-suggest what the user
+  just did)
+- The Codex CLI isn't installed — at most, mention `/claudex:setup` once in
+  the visible conversation, then drop it
 
 ## How to suggest
 

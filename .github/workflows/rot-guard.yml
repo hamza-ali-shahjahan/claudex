@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   rotscan:
     name: rotscan — broken links, secrets, dead files, unresolvable deps
@@ -13,4 +16,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - name: Run rotscan
-        run: bunx @hamzaish/rotscan
+        run: bunx @hamzaish/rotscan@0.1.0

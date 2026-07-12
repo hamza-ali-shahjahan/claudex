@@ -76,7 +76,7 @@ That line is earned, not decorative. It only appears after Codex has actually re
 > codex login
 > ```
 
-No silent fallbacks, no third ending. If it signed, it was cross-reviewed.
+And the contract is enforced end-to-end: if the Codex call fails mid-run, if there's nothing to review, or if the models are still deadlocked after three rounds, the run ends **unsigned** and says so. No silent fallbacks. If it signed, it was cross-reviewed — that is the only way the line appears.
 
 ## The skill (advisory, never auto-runs Codex)
 
