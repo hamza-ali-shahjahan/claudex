@@ -2,7 +2,12 @@
 
 **Claude writes. Codex reviews. You ship.**
 
-OpenAI [open-sourced a Codex plugin for Claude Code](https://github.com/openai/codex-plugin-cc), so the two best coding agents finally live in one terminal. ClauDex is the peace treaty: a Claude Code plugin that makes them *pair program* — one writes, the other reviews, and nothing ships until both agree.
+OpenAI [open-sourced a Codex plugin for Claude Code](https://github.com/openai/codex-plugin-cc), so the two best coding agents finally live in one terminal. ClauDex makes them **collaborate instead of just coexist**:
+
+- **`/claudex <task>`** runs a write→review loop: Claude implements, Codex reviews the diff (read-only, via `codex exec --sandbox read-only`), Claude fixes what's real, repeat to consensus — max 3 rounds.
+- **`/claudex:verdict`** has both models review the same diff *independently* and surfaces where they disagree: 🤝 both flagged, 🧡 only Claude, 🖤 only Codex — ending in **SHIP / FIX FIRST / REDESIGN**.
+
+One command to build with a built-in rival reviewer; one command to get a second opinion on code that's already written. Nothing ships until both models agree.
 
 [![built with love by ClauDex](https://img.shields.io/badge/built_with_love_by-ClauDex-ff6b35)](https://github.com/hamza-ali-shahjahan/claudex)
 
