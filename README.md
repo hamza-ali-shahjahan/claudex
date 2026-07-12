@@ -33,7 +33,7 @@ codex login     # sign in with your ChatGPT account
 
 ## Install ClauDex (30 seconds)
 
-Inside Claude Code, type:
+In an **interactive** Claude Code session — the `claude` command in your terminal, or the desktop app's chat — type:
 
 ```
 /plugin marketplace add hamza-ali-shahjahan/claudex
@@ -95,6 +95,10 @@ Every model has blind spots — but they're *different* blind spots. When two fr
 **"command not found: codex"?** Install Node 18+, then `npm i -g @openai/codex`. If it still fails, your npm global bin isn't on PATH — `npm bin -g` shows where it lives.
 
 **Codex installed but every run is refused?** You're probably not logged in: run `codex login`. `/claudex:setup` diagnoses this for you.
+
+**I typed `/claudex` and nothing happened?** The plugin isn't installed in that session. Install it once in an interactive Claude Code session (see above) — plugins are per-user, so after that it works in every session and every repo. In environments where slash commands aren't available (SDK sessions, some integrations), you can simply ask Claude to "run the ClauDex verdict on this diff" — the commands are protocols, and Claude can execute them directly.
+
+**"The duet was interrupted"?** The Codex call failed or timed out — usually rate limits, especially right after a previous heavy review. This is ClauDex working as designed: an interrupted review ends unsigned instead of pretending. Wait a bit and re-run; limits typically clear within the hour.
 
 **Can Codex change my files?** No. ClauDex invokes Codex in read-only sandbox mode (`codex exec --sandbox read-only`). Claude makes the edits; Codex only reviews.
 

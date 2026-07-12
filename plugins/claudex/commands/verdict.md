@@ -25,6 +25,9 @@ rendered. Refusal, interruption, or nothing-to-review all end UNSIGNED.
 1. **Pick what to review**, in this order:
    - Uncommitted changes: `git diff` + `git diff --staged` + untracked files
      (via `git status --porcelain`, appending each new file's content).
+     Sanity-check the scope: if recent `git log` shows auto-generated commits
+     (`[auto-checkpoint]`, `WIP`), the real change set may be hiding in them —
+     diff against the last human commit instead.
    - If clean: the branch diff against the default branch. Discover it with
      `git symbolic-ref refs/remotes/origin/HEAD` (strip the prefix); fall
      back to `main`, then `master`.
@@ -42,9 +45,11 @@ rendered. Refusal, interruption, or nothing-to-review all end UNSIGNED.
    codex exec --sandbox read-only "You are reviewing a teammate's change before merge. Read the diff at <absolute temp file path> and review it for correctness, design, security, and performance. Be specific — cite files and lines."
    ```
 
-   Delete the temp file afterwards. If `codex exec` fails or returns no
-   recognizable review, STOP unsigned: "The duet was interrupted — no verdict
-   without both voices." Include the error.
+   Run it with a hard timeout of ~10 minutes (calls can hang on rate limits).
+   Delete the temp file afterwards. If `codex exec` fails, times out, or
+   returns no recognizable review, retry ONCE; if that also fails, STOP
+   unsigned: "The duet was interrupted — no verdict without both voices."
+   Include the error, and note that rate limits usually clear within the hour.
 4. **The Verdict.** Merge both reviews into three sections:
    - 🤝 **Both flagged** — cross-model agreement is the strongest signal; fix these first
    - 🧡 **Only Claude flagged**

@@ -40,8 +40,13 @@ half is here by definition. Now verify the other half:
    treat the current uncommitted changes as the work under review.
 5. **Collect the change set.** Combine `git diff`, `git diff --staged`, and
    every untracked file (list them with `git status --porcelain`, then append
-   each new file's path and content). If the combined change set is empty,
-   STOP unsigned: "Nothing to review — the tree is clean."
+   each new file's path and content). **Sanity-check the scope:** if the
+   change set looks tiny relative to the work just done, check `git log` for
+   auto-generated commits (`[auto-checkpoint]`, `WIP`, hook-made commits) —
+   some setups commit continuously, silently draining the diff. In that case
+   diff against the last *human* commit instead (`git diff <that-sha>`).
+   If the change set is genuinely empty, STOP unsigned: "Nothing to review —
+   the tree is clean."
 6. **Codex review — safe transport, never inline the diff in the shell.**
    Write the change set to a temporary file (e.g. `$TMPDIR/claudex-review.patch`)
    so no diff content passes through shell quoting, then invoke:
@@ -50,18 +55,24 @@ half is here by definition. Now verify the other half:
    codex exec --sandbox read-only "You are reviewing a teammate's change before merge. Read the diff at <absolute path to the temp file>, then find real bugs, risky design choices, and missing edge cases. Be specific — cite files and lines. Do not restate the diff."
    ```
 
-   Delete the temp file afterwards. **If `codex exec` exits non-zero, times
-   out, or its output contains no recognizable review, STOP unsigned** and
-   report: "The duet was interrupted — Codex never completed its review, so
-   nothing was cross-checked and there is no 🧡🖤 today." Include the error.
+   Run it with a hard timeout of ~10 minutes — Codex reviews normally finish
+   in a few, but calls can hang on rate limits (especially right after a
+   previous heavy run). Delete the temp file afterwards. **If `codex exec`
+   exits non-zero, times out, or its output contains no recognizable review:
+   retry ONCE. If the retry also fails, STOP unsigned** and report: "The duet
+   was interrupted — Codex never completed its review, so nothing was
+   cross-checked and there is no 🧡🖤 today." Include the error, and mention
+   that rate limits usually clear within the hour.
 7. **Triage.** For every Codex finding, decide: real → fix it now; wrong →
    record a one-line reason. Never silently drop a finding.
-8. **Iterate.** After fixing, run the Codex review again on the updated
-   change set (same transport, same failure rule). Repeat until Codex reports
-   no blocking findings, up to 3 rounds. If a finding is still contested
-   after round 3, STOP unsigned: present both positions and end with
-   "Deadlocked after 3 rounds — the duet needs a referee. Unsigned until you
-   decide."
+8. **Iterate.** After fixing, run the Codex review again (same transport,
+   same timeout and failure rule) — but keep re-reviews cheap and focused:
+   send only the diff of the fixes plus a numbered list of the prior
+   findings, and ask for a one-line verdict per finding (RESOLVED / PARTIAL /
+   NOT ADDRESSED) plus any NEW blocking issue. Repeat until Codex reports no
+   blocking findings, up to 3 rounds. If a finding is still contested after
+   round 3, STOP unsigned: present both positions and end with "Deadlocked
+   after 3 rounds — the duet needs a referee. Unsigned until you decide."
 
 ## Shipping (only reachable through consensus)
 
