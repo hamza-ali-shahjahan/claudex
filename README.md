@@ -41,6 +41,15 @@ In an **interactive** Claude Code session — the `claude` command in your termi
 /claudex:setup
 ```
 
+Prefer the shell? Same result without opening a session:
+
+```bash
+claude plugin marketplace add hamza-ali-shahjahan/claudex
+claude plugin install claudex@claudex
+```
+
+Either way the install is per-user and one-time: `/claudex` is then available in every Claude Code session on your machine (already-open sessions need a restart — plugins load at session start).
+
 `/claudex:setup` checks everything above and tells you exactly what to fix if something's missing. When it says **"ClauDex is ready"**, try your first run:
 
 ```
