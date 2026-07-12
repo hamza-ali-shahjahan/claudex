@@ -7,6 +7,15 @@ Run a two-model review of the current changes. Use the uncommitted diff; if the
 working tree is clean, use the branch diff against the default branch.
 Focus area: "$ARGUMENTS" (review all axes if empty).
 
+0. **Preflight — it takes two to ClauDex.** Run `codex --version` and check
+   auth (`codex login status` or equivalent). If either fails, STOP before
+   reviewing anything and reply with exactly:
+
+   > **It takes two to ClauDex.** 🧡 Claude is here — 🖤 Codex is not, so this
+   > verdict would be *built with love by Claude alone*, and a one-model
+   > verdict is just an opinion. Fix: `npm i -g @openai/codex` then
+   > `codex login`, and come back for the duet.
+
 1. Collect the diff yourself with git.
 2. **Claude's review (yours).** Review it for correctness, design, security, and
    performance. Write your findings down BEFORE consulting Codex, so your take is
