@@ -55,7 +55,15 @@ Inside Claude Code, type:
 
 ## It takes two to ClauDex
 
-Every command checks for both halves before doing any work. If Codex isn't installed or isn't logged in, ClauDex **refuses to run** rather than quietly doing a one-model job:
+Every command checks for both halves before doing any work, and every run ends one of exactly two ways.
+
+**When both are here**, the duet plays out — Claude writes, Codex reviews, they iterate to consensus — and the run signs off with:
+
+> built with love by ClauDex 🧡🖤
+
+That line is earned, not decorative. It only appears after Codex has actually reviewed the diff, so seeing it *means* the code was cross-reviewed — the same guarantee behind the commit co-author trailers and [the badge](#the-badge).
+
+**When Codex is missing or not logged in**, ClauDex **refuses to run** rather than quietly doing a one-model job:
 
 > **It takes two to ClauDex.** 🧡 Claude is here — 🖤 Codex is not, so this would be *built with love by Claude alone*, and that's not the deal. Fix it in two lines, then come back for the duet:
 > ```
@@ -63,7 +71,7 @@ Every command checks for both halves before doing any work. If Codex isn't insta
 > codex login
 > ```
 
-No silent fallbacks. If it ran, it was cross-reviewed.
+No silent fallbacks, no third ending. If it signed, it was cross-reviewed.
 
 ## The skill (advisory, never auto-runs Codex)
 
