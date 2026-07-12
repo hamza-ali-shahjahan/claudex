@@ -1,0 +1,14 @@
+{
+  "name": "claudex",
+  "owner": {
+    "name": "Hamza Ali",
+    "email": "mail.hamza.ali@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "claudex",
+      "source": "./plugins/claudex",
+      "description": "Claude writes. Codex reviews. You ship. Cross-model pair programming inside Claude Code."
+    }
+  ]
+}
