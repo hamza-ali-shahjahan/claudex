@@ -71,6 +71,7 @@ When you're ready for real code, run `/claudex:verdict` in any repo with uncommi
 | `/claudex <task>` | The loop: Claude implements, Codex reviews the diff, Claude fixes, repeat until both agree (max 3 rounds). Ends every run with `built with love by ClauDex 🧡🖤`. |
 | `/claudex` (no args) | Runs the review loop on your current uncommitted changes. |
 | `/claudex:verdict [focus]` | Two independent reviews of the same diff, merged into a verdict table: 🤝 both flagged, 🧡 only Claude, 🖤 only Codex. Ends with SHIP / FIX FIRST / REDESIGN. |
+| `/claudex:debate <decision>` | Both models argue a design decision from opposite corners — independent openings, one rebuttal round each, then a decision brief ending in CONSENSUS or SPLIT DECISION. You arbitrate. |
 | `/claudex:setup` | Checks Codex CLI, auth, and git are ready — with the exact fix command for anything missing. |
 | `/claudex:demo` | The two-minute first duet: plants five bugs in a throwaway repo, both models review independently, you get the planted-vs-caught scoreboard. |
 
@@ -82,7 +83,7 @@ Every command checks for both halves before doing any work, and every run ends o
 
 > built with love by ClauDex 🧡🖤
 
-That line is earned, not decorative. It only appears after Codex has actually reviewed the diff, so seeing it *means* the code was cross-reviewed — the same guarantee behind the commit co-author trailers and [the badge](#the-badge). The verb matches the work: the `/claudex` loop signs **built** with love; `/claudex:verdict` signs **reviewed** with love, because it builds nothing.
+That line is earned, not decorative. It only appears after Codex has actually reviewed the diff, so seeing it *means* the code was cross-reviewed — the same guarantee behind the commit co-author trailers and [the badge](#the-badge). The verb matches the work: the `/claudex` loop signs **built** with love; `/claudex:verdict` signs **reviewed** with love, because it builds nothing; `/claudex:debate` signs **argued** with love, because arguing is all it does.
 
 **When Codex is missing or not logged in**, ClauDex **refuses to run** rather than quietly doing a one-model job:
 
@@ -137,8 +138,7 @@ Co-Authored-By: Codex <noreply@openai.com>
 
 ## Roadmap
 
-- `/claudex:debate` — both models argue an architecture decision, you arbitrate
-- Consensus gate as a Stop hook — block commits until both models sign off
+- Opt-in consensus gate — block commits until both models sign off (explicitly enabled per-repo, never a default hook; invocation-only stays the rule)
 - GitHub Action: ClauDex verdict as a PR comment
 - Agreement stats — how often do Claude and Codex actually agree in your repo?
 

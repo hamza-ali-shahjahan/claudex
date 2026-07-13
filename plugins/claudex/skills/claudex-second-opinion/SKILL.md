@@ -22,6 +22,9 @@ invocation is consent — your job here is one well-timed suggestion, nothing mo
 - A multi-file refactor or roughly 150+ changed lines
 - A bug fix where the root cause was never fully confirmed
 - The user sounds unsure ("I think this works", "hopefully that's it")
+- The user is weighing an architectural choice *before* code exists — then
+  the right suggestion is `/claudex:debate <the decision>`, not a verdict
+  (a debate needs a question, not a diff)
 
 ## When to stay quiet
 

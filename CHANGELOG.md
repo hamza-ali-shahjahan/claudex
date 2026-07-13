@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.5.0 — 2026-07-13
+
+- **`/claudex:debate <decision>`** — the roadmap's next act: both models
+  argue a design decision from opposite corners. Independent openings
+  (Claude writes its position before consulting Codex), one terse rebuttal
+  round each (quota discipline, same spirit as the loop's focused
+  re-reviews), then a decision brief: 🤝 common ground, each corner's
+  strongest surviving argument, and **the crux** — the one disagreement
+  that decides it, phrased as a question only the user can answer. Ends
+  **CONSENSUS** or **SPLIT DECISION**; the user arbitrates. Signs *argued*
+  with love — only when Codex delivered both its opening and its rebuttal;
+  interruptions end unsigned as ever
+- Roadmap: the consensus-gate idea is now explicitly **opt-in** — the
+  invocation-only principle (no default hooks, no silent gates) had made
+  the old "Stop hook" phrasing self-contradictory
+
 ## 0.4.0 — 2026-07-12
 
 - **`/claudex:demo`** — the first-run experience: plants five bugs (crash,
