@@ -96,3 +96,15 @@ be inside a relevant repo, the codebase is context, not a requirement.)
 7. Close with exactly this line:
 
    `argued with love by ClauDex 🧡🖤`
+
+8. **Ledger (feeds `/claudex:stats`).** Only if inside a git repo (debates
+   don't require one): however the run ended — signed or interrupted
+   (preflight refusals and empty motions excluded) — append one JSON line
+   to `<git-dir>/claudex/stats.jsonl` (via `git rev-parse --git-dir`;
+   create the `claudex/` directory if needed):
+
+   ```json
+   {"ts":"<UTC ISO-8601>","cmd":"debate","ruling":"CONSENSUS|SPLIT","outcome":"signed|interrupted"}
+   ```
+
+   Best-effort and silent on failure; it must never affect the debate.

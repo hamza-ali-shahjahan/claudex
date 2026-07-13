@@ -74,6 +74,7 @@ When you're ready for real code, run `/claudex:verdict` in any repo with uncommi
 | `/claudex:debate <decision>` | Both models argue a design decision from opposite corners — independent openings, one rebuttal round each, then a decision brief ending in CONSENSUS or SPLIT DECISION. You arbitrate. |
 | `/claudex:setup` | Checks Codex CLI, auth, and git are ready — with the exact fix command for anything missing. |
 | `/claudex:demo` | The two-minute first duet: plants five bugs in a throwaway repo, both models review independently, you get the planted-vs-caught scoreboard. |
+| `/claudex:stats` | The duet's history in this repo: agreement rate, rounds-to-consensus, rulings, interruptions — tallied from a local ledger no one commits. Reads only; never signs. |
 
 ## It takes two to ClauDex
 
@@ -97,7 +98,7 @@ And the contract is enforced end-to-end: if the Codex call fails mid-run, if the
 
 ## Invocation-only, by principle
 
-ClauDex never runs by default. No hooks, no background reviews, no silent gates in your workflow — a duet costs real minutes and real Codex quota, so the *only* trigger is a human typing a command (or asking their agent to run one). If you didn't invoke it, it didn't run.
+ClauDex never runs by default. No hooks, no background reviews, no silent gates in your workflow — a duet costs real minutes and real Codex quota, so the *only* trigger is a human typing a command (or asking their agent to run one). If you didn't invoke it, it didn't run. The [GitHub Action](#claudex-on-your-pull-requests-github-action) is the same consent written down: it runs only in repos where *you* committed a workflow that names it, with API keys *you* configured.
 
 The one soft touch is the bundled `claudex-second-opinion` skill: after a substantial or risky change — auth, payments, concurrency, a big refactor, a bug fix with an uncertain root cause — Claude may *suggest* running `/claudex:verdict`, in a single line, at most once. It cannot invoke Codex on its own. Commands do the work; the skill just remembers to ask. (Don't even want the suggestion? `claude plugin disable claudex@claudex` when you're not using it, or delete the skill directory from your installed copy.)
 
@@ -136,11 +137,45 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 Co-Authored-By: Codex <noreply@openai.com>
 ```
 
+## ClauDex on your pull requests (GitHub Action)
+
+The verdict, in CI: both models review every PR independently, and the merged verdict lands as a comment. Add this workflow to your repo (e.g. `.github/workflows/claudex.yml`), and set `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` in the repo's Actions secrets:
+
+```yaml
+name: ClauDex verdict
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  verdict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # ClauDex diffs against the base branch
+      - uses: hamza-ali-shahjahan/claudex@v0.6.0
+        with:
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+```
+
+Three things to know before you turn it on:
+
+- **It costs real money on every PR** — both halves run on metered API keys here, not your chat subscriptions. To review only when asked, gate it on a label: add `if: contains(github.event.pull_request.labels.*.name, 'claudex')` to the job and apply the `claudex` label when you want the duet.
+- **The contract holds in CI.** The comment ends `reviewed with love by ClauDex 🧡🖤` only when both models actually reviewed. If either key is missing, either review fails (after one retry), or the merge fails, the check fails and **no comment is posted** — never a silent one-model verdict.
+- **A `focus` input** narrows the review (e.g. `focus: security`), same as `/claudex:verdict`.
+
+## Agreement stats
+
+Every `/claudex`, `/claudex:verdict`, and `/claudex:debate` run appends one JSON line to a ledger at `<git-dir>/claudex/stats.jsonl` — inside the `.git` directory, so it can never be committed and never touches your tree. `/claudex:stats` tallies it: agreement rate between the models, rounds-to-consensus, SHIP/FIX FIRST/REDESIGN rulings, debate outcomes, interruption rate. The stats stay on your machine; nothing is phoned anywhere.
+
 ## Roadmap
 
 - Opt-in consensus gate — block commits until both models sign off (explicitly enabled per-repo, never a default hook; invocation-only stays the rule)
-- GitHub Action: ClauDex verdict as a PR comment
-- Agreement stats — how often do Claude and Codex actually agree in your repo?
 
 ## Disclaimer
 

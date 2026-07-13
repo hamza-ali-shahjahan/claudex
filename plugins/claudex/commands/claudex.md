@@ -93,3 +93,18 @@ half is here by definition. Now verify the other half:
     Co-Authored-By: Claude <noreply@anthropic.com>
     Co-Authored-By: Codex <noreply@openai.com>
     ```
+
+## Ledger (feeds `/claudex:stats`)
+
+However the run ended — signed, deadlocked, interrupted, or
+nothing-to-review (preflight refusals excluded: they did no work) — append
+one JSON line to `<git-dir>/claudex/stats.jsonl` (resolve `<git-dir>` with
+`git rev-parse --git-dir`; create the `claudex/` directory if needed):
+
+```json
+{"ts":"<UTC ISO-8601>","cmd":"loop","rounds":<completed review rounds>,"codex_findings":<total>,"fixed":<n>,"rejected":<n>,"outcome":"signed|deadlock|interrupted|nothing-to-review"}
+```
+
+Living under the git dir, the ledger can never be committed. It is
+best-effort: if the write fails, skip it silently — the ledger must never
+affect the run's result or delay the user.

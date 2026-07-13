@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.6.0 — 2026-07-13
+
+Two more roadmap items shipped — the verdict reaches CI, and the duet
+starts keeping score:
+
+- **GitHub Action** — `uses: hamza-ali-shahjahan/claudex@v0.6.0` runs both
+  models on every PR (or only on a `claudex` label — the README shows the
+  cost-control gate) and posts the merged verdict as a comment. The
+  contract holds in CI: missing key, failed review (after one retry), or
+  failed merge fails the check and posts **nothing** — the comment ends
+  "reviewed with love" only when both models actually reviewed
+- **`/claudex:stats` + the ledger** — every loop/verdict/debate run now
+  appends one JSON line to `<git-dir>/claudex/stats.jsonl` (inside `.git`,
+  so it can never be committed; best-effort, never blocks a run).
+  `/claudex:stats` tallies agreement rate, rounds-to-consensus, rulings,
+  Codex's finding hit-rate, and interruption rate — local only, never
+  phoned anywhere. It reads a ledger and reviews nothing, so it never signs
+- Invocation-only clarified for CI: the Action is consent written down —
+  it runs only where you committed a workflow naming it, on keys you set
+
 ## 0.5.0 — 2026-07-13
 
 - **`/claudex:debate <decision>`** — the roadmap's next act: both models

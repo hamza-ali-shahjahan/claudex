@@ -63,3 +63,15 @@ nothing; only the `/claudex` loop signs "built with love".
    **REDESIGN** — and:
 
    `reviewed with love by ClauDex 🧡🖤`
+
+6. **Ledger (feeds `/claudex:stats`).** However the run ended — signed,
+   interrupted, or nothing-to-review (preflight refusals excluded) — append
+   one JSON line to `<git-dir>/claudex/stats.jsonl` (via
+   `git rev-parse --git-dir`; create the `claudex/` directory if needed):
+
+   ```json
+   {"ts":"<UTC ISO-8601>","cmd":"verdict","both":<n>,"claude_only":<n>,"codex_only":<n>,"ruling":"SHIP|FIX FIRST|REDESIGN","outcome":"signed|interrupted|nothing-to-review"}
+   ```
+
+   Best-effort and silent on failure; under the git dir it can never be
+   committed, and it must never affect the verdict itself.

@@ -1,0 +1,121 @@
+name: "ClauDex Verdict"
+description: "Claude and Codex independently review a pull request; the merged verdict — agreements, disagreements, SHIP / FIX FIRST / REDESIGN — lands as a PR comment."
+branding:
+  icon: "heart"
+  color: "orange"
+
+inputs:
+  anthropic-api-key:
+    description: "Anthropic API key — 🧡 Claude's half of the duet"
+    required: true
+  openai-api-key:
+    description: "OpenAI API key — 🖤 Codex's half of the duet"
+    required: true
+  github-token:
+    description: "Token used to post the PR comment (needs pull-requests: write)"
+    required: false
+    default: "${{ github.token }}"
+  focus:
+    description: "Optional review focus, e.g. 'security' or 'the caching layer'"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: It takes two to ClauDex
+      shell: bash
+      env:
+        A_KEY: ${{ inputs.anthropic-api-key }}
+        O_KEY: ${{ inputs.openai-api-key }}
+      run: |
+        missing=""
+        [ -z "$A_KEY" ] && missing=" anthropic-api-key"
+        [ -z "$O_KEY" ] && missing="$missing openai-api-key"
+        if [ -n "$missing" ]; then
+          echo "::error::It takes two to ClauDex — missing:$missing. There is no one-model fallback; the verdict will not run."
+          exit 1
+        fi
+
+    - name: Collect the diff
+      id: diff
+      shell: bash
+      run: |
+        git diff "origin/${{ github.base_ref }}...HEAD" > "$RUNNER_TEMP/claudex-pr.patch" || {
+          echo "::error::Could not diff against origin/${{ github.base_ref }} — check out with 'fetch-depth: 0' so the base branch is available."
+          exit 1
+        }
+        if [ ! -s "$RUNNER_TEMP/claudex-pr.patch" ]; then
+          echo "::notice::Nothing to review — the diff against ${{ github.base_ref }} is empty. Ending unsigned; no comment."
+          echo "empty=true" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Install the duet
+      if: steps.diff.outputs.empty != 'true'
+      shell: bash
+      run: npm install -g @anthropic-ai/claude-code @openai/codex
+
+    - name: 🧡 Claude reviews
+      if: steps.diff.outputs.empty != 'true'
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+        FOCUS: ${{ inputs.focus }}
+      run: |
+        prompt="You are reviewing a teammate's pull request before merge. Read the diff at $RUNNER_TEMP/claudex-pr.patch and review it for correctness, design, security, and performance. Be specific — cite files and lines. Do not restate the diff. Output only the findings."
+        [ -n "$FOCUS" ] && prompt="$prompt Focus especially on: $FOCUS."
+        for attempt in 1 2; do
+          if timeout 600 claude -p "$prompt" > "$RUNNER_TEMP/claudex-claude.md" 2>"$RUNNER_TEMP/claudex-claude.err" \
+             && [ -s "$RUNNER_TEMP/claudex-claude.md" ]; then
+            exit 0
+          fi
+          echo "Claude review attempt $attempt failed."
+        done
+        echo "::error::The duet was interrupted — 🧡 Claude never completed its review, so nothing was cross-checked and no comment will be posted."
+        cat "$RUNNER_TEMP/claudex-claude.err" || true
+        exit 1
+
+    - name: 🖤 Codex reviews
+      if: steps.diff.outputs.empty != 'true'
+      shell: bash
+      env:
+        OPENAI_API_KEY: ${{ inputs.openai-api-key }}
+      run: |
+        # Some Codex CLI versions want an explicit API-key login; others read the env var. Try both.
+        printf '%s' "$OPENAI_API_KEY" | codex login --with-api-key >/dev/null 2>&1 || true
+        for attempt in 1 2; do
+          if timeout 600 codex exec --sandbox read-only "You are reviewing a teammate's pull request before merge. Read the diff at $RUNNER_TEMP/claudex-pr.patch, then find real bugs, risky design choices, and missing edge cases. Be specific — cite files and lines. Do not restate the diff." > "$RUNNER_TEMP/claudex-codex.md" 2>"$RUNNER_TEMP/claudex-codex.err" \
+             && [ -s "$RUNNER_TEMP/claudex-codex.md" ]; then
+            exit 0
+          fi
+          echo "Codex review attempt $attempt failed."
+        done
+        echo "::error::The duet was interrupted — 🖤 Codex never completed its review, so nothing was cross-checked and no comment will be posted."
+        cat "$RUNNER_TEMP/claudex-codex.err" || true
+        exit 1
+
+    - name: The verdict
+      if: steps.diff.outputs.empty != 'true'
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+      run: |
+        prompt="Merge two independent reviews of the same pull request into one verdict comment. Claude's review is at $RUNNER_TEMP/claudex-claude.md and Codex's review is at $RUNNER_TEMP/claudex-codex.md — read both. Produce GitHub-flavored markdown: one short intro line, then three sections — '🤝 Both flagged' (cross-model agreement; fix these first), '🧡 Only Claude flagged', '🖤 Only Codex flagged' — each finding as file:line, a one-line issue, and a severity (blocker / should-fix / nit). Then a single bold line with the verdict: SHIP, FIX FIRST, or REDESIGN. End with exactly this line: reviewed with love by ClauDex 🧡🖤"
+        for attempt in 1 2; do
+          if timeout 600 claude -p "$prompt" > "$RUNNER_TEMP/claudex-verdict.md" 2>/dev/null \
+             && [ -s "$RUNNER_TEMP/claudex-verdict.md" ]; then
+            exit 0
+          fi
+        done
+        echo "::error::Both reviews completed but the verdict merge failed — no comment will be posted."
+        exit 1
+
+    - name: Post the comment
+      if: steps.diff.outputs.empty != 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        gh pr comment "${{ github.event.pull_request.number }}" \
+          --repo "${{ github.repository }}" \
+          --body-file "$RUNNER_TEMP/claudex-verdict.md"
