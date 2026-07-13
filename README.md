@@ -75,6 +75,7 @@ When you're ready for real code, run `/claudex:verdict` in any repo with uncommi
 | `/claudex:setup` | Checks Codex CLI, auth, and git are ready — with the exact fix command for anything missing. |
 | `/claudex:demo` | The two-minute first duet: plants five bugs in a throwaway repo, both models review independently, you get the planted-vs-caught scoreboard. |
 | `/claudex:stats` | The duet's history in this repo: agreement rate, rounds-to-consensus, rulings, interruptions — tallied from a local ledger no one commits. Reads only; never signs. |
+| `/claudex:gate on\|off\|status` | The consensus gate, per-repo and opt-in: once ON, commits made through Claude Code block unless a signed cross-review is newer than the last commit. Ships dormant everywhere. |
 
 ## It takes two to ClauDex
 
@@ -98,7 +99,7 @@ And the contract is enforced end-to-end: if the Codex call fails mid-run, if the
 
 ## Invocation-only, by principle
 
-ClauDex never runs by default. No hooks, no background reviews, no silent gates in your workflow — a duet costs real minutes and real Codex quota, so the *only* trigger is a human typing a command (or asking their agent to run one). If you didn't invoke it, it didn't run. The [GitHub Action](#claudex-on-your-pull-requests-github-action) is the same consent written down: it runs only in repos where *you* committed a workflow that names it, with API keys *you* configured.
+ClauDex never runs by default. No background reviews, no silent gates in your workflow — a duet costs real minutes and real Codex quota, so the *only* trigger is a human typing a command (or asking their agent to run one). If you didn't invoke it, it didn't run. The [GitHub Action](#claudex-on-your-pull-requests-github-action) is the same consent written down: it runs only in repos where *you* committed a workflow that names it, with API keys *you* configured. And the [consensus gate](#the-consensus-gate-opt-in) is the same consent applied to enforcement: the hook ships with the plugin but is dormant in every repo until *you* run `/claudex:gate on` there — anywhere else it does nothing but exit.
 
 The one soft touch is the bundled `claudex-second-opinion` skill: after a substantial or risky change — auth, payments, concurrency, a big refactor, a bug fix with an uncertain root cause — Claude may *suggest* running `/claudex:verdict`, in a single line, at most once. It cannot invoke Codex on its own. Commands do the work; the skill just remembers to ask. (Don't even want the suggestion? `claude plugin disable claudex@claudex` when you're not using it, or delete the skill directory from your installed copy.)
 
@@ -121,6 +122,8 @@ Every model has blind spots — but they're *different* blind spots. When two fr
 **"The duet was interrupted"?** The Codex call failed or timed out — usually rate limits, especially right after a previous heavy review. This is ClauDex working as designed: an interrupted review ends unsigned instead of pretending. Wait a bit and re-run; limits typically clear within the hour.
 
 **Can Codex change my files?** No. ClauDex invokes Codex in read-only sandbox mode (`codex exec --sandbox read-only`). Claude makes the edits; Codex only reviews.
+
+**Will the consensus gate block my own terminal commits?** No — it only intercepts commits made through Claude Code, and only in repos where you ran `/claudex:gate on`. Everywhere else the hook is a no-op. If a gated repo starts blocking you and you don't want that, `/claudex:gate off` lifts it instantly.
 
 ## The badge
 
@@ -157,7 +160,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0   # ClauDex diffs against the base branch
-      - uses: hamza-ali-shahjahan/claudex@v0.6.0
+      - uses: hamza-ali-shahjahan/claudex@v0.7.0
         with:
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
@@ -173,9 +176,19 @@ Three things to know before you turn it on:
 
 Every `/claudex`, `/claudex:verdict`, and `/claudex:debate` run appends one JSON line to a ledger at `<git-dir>/claudex/stats.jsonl` — inside the `.git` directory, so it can never be committed and never touches your tree. `/claudex:stats` tallies it: agreement rate between the models, rounds-to-consensus, SHIP/FIX FIRST/REDESIGN rulings, debate outcomes, interruption rate. The stats stay on your machine; nothing is phoned anywhere.
 
+## The consensus gate (opt-in)
+
+For repos where cross-review shouldn't be optional. Run `/claudex:gate on` in a repo, and from then on any `git commit` made **through Claude Code** there is blocked unless the [ledger](#agreement-stats) shows a signed cross-review newer than the last commit — the sign-off contract, enforced. `/claudex:gate off` lifts it; `/claudex:gate status` tells you whether a commit would pass right now.
+
+Honest scope and promises:
+
+- **Dormant by default.** The hook ships with the plugin but exits instantly in any repo you haven't gated. Enabling is per-repo, explicit, and reversible; the marker lives inside `.git`, so it can never be committed and never follows a clone.
+- **It gates Claude, not your terminal.** Commits you type in your own shell are untouched — this is a workflow gate for agent-made commits, not a git enforcement mechanism (branch protection is the tool for that).
+- **It fails open.** If the hook can't do its job (no JSON parser, unreadable ledger), it allows rather than breaking your commits — it's a convenience contract, not a security boundary.
+
 ## Roadmap
 
-- Opt-in consensus gate — block commits until both models sign off (explicitly enabled per-repo, never a default hook; invocation-only stays the rule)
+All four original roadmap items — `/claudex:debate`, the GitHub Action, agreement stats, and the opt-in consensus gate — have shipped. Got an idea for what the duet should do next? [Open an issue](https://github.com/hamza-ali-shahjahan/claudex/issues).
 
 ## Disclaimer
 

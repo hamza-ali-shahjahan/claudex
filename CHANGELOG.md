@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.7.0 — 2026-07-13
+
+The original roadmap is complete — its last item ships, and it's the one
+that turns the sign-off contract from culture into (opt-in) enforcement:
+
+- **The consensus gate** — `/claudex:gate on|off|status` plus a
+  `consensus-gate.sh` PreToolUse hook. In a gated repo, `git commit` run
+  through Claude Code is blocked unless the ledger shows a signed
+  cross-review newer than the last commit. Invocation-only holds: the hook
+  ships dormant and does nothing anywhere until the user runs
+  `/claudex:gate on` in that specific repo (marker inside `.git`, like the
+  ledger — never committable, never follows a clone)
+- Honest scope, stated in README and enforced in code: the gate blocks
+  Claude-made commits only (your terminal is untouched), and it fails
+  OPEN — no JSON parser or unreadable ledger means allow, never a broken
+  commit. It is a workflow contract, not a security boundary
+- Verified end-to-end: 13-case harness (allow/block × gated/ungated,
+  signed-newer/older, interrupted-only ledger, `git -C` and compound
+  commands, no-commit repos, malformed hook input) — 13/13, shellcheck
+  clean
+
 ## 0.6.0 — 2026-07-13
 
 Two more roadmap items shipped — the verdict reaches CI, and the duet
